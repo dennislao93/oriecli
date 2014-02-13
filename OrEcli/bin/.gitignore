@@ -1,5 +1,12 @@
-/Constants.class
 /Images
+/actions
+/ai
+/display
+/game
+/main
+/map
+/objects
+/Constants.class
 /Test$O.class
 /Test.class
 /TestGraphics$Listener.class
@@ -11,10 +18,3 @@
 /TestUDP$ClientThread.class
 /TestUDP$ServerThread.class
 /TestUDP.class
-/actions
-/ai
-/display
-/game
-/main
-/map
-/objects

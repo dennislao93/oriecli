@@ -1,0 +1,5 @@
+0: building bases, roads
+1: ground units, ground shots
+2: flying units, flying shots
+3: building alphas and buildingtops
+4: health and construction bars

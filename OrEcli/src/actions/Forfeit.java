@@ -1,0 +1,30 @@
+package actions;
+
+import game.Game;
+
+public class Forfeit extends Action {
+
+	// args: {gameType}
+	public Forfeit(String[] args) {
+		super(args);
+	}
+
+	@Override
+	public void processAction(Game game) {
+		game.setIsForfeit(true);
+		if (!args[0].equals("SINGLE_PLAYER")) {
+			game.addUpdate(new ForfeitClient(args));
+		}
+		if (args[0].equals("CLIENT")) {
+			game.setIsVictor(true);
+		} else {
+			game.setIsVictor(false);
+		}
+	}
+
+	@Override
+	public String getHeader() {
+		return "fft";
+	}
+
+}

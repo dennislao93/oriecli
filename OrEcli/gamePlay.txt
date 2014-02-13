@@ -1,0 +1,28 @@
+Barracks					>>Cadet>>Soldier
+Workshop					>>Cadet>>Mechanic
+Lightweight Armory			>>Soldier/Armed Rover/Attack Robot>>Soldier/Armed Rover/Attack Robot
+[Secret Institution]			>>Soldier>>[Space Commando]
+Small Factory				>>Mechanic>>Armed Rover/Attack Robot
+Big Factory				>>Mechanic>>Heavy Drone
+Upgrade Lab				>>Mechanic/Heavy Drone/Advanced Fighter>>Heavy Drone/Advanced Fighter
+(Vehicle Assembly Building)	>>Mechanic/(Pilot)>>(Advanced Fighter)
+(University)				>>Cadet>>Mechanic/(Pilot)/Research Scientist
+[Science Institution]			>>Cadet>>Research Scientist
+Research Facility			>>Research Scientist
+Solar Farm
+Turret
+
+Archery Hall				>>Lunarian>>(Houyi Disciple)/[Celestial Archer]
+Rabbit's Burrow				Moon Rabbit
+Animal Conscription			>>Moon Rabbit/(Crane)>>Armed Moon Rabbit>>Armed Immortal Crane
+(Elixir of Life Brewery)		>>Moon Rabbit
+(Penglai Monastary)			(Penglai Immortal)/(Immortal Crane)
+(Armada Base)				>>Lunarian>>(Flying Junk)/(Xu Fu's Gem)
+(The Moon Goddess's Legion)	Lunarian Commander/(Jade Rabbit)
+[Lord Tsukuyomi's Legion]		Lunarian Commander/[Imperial Envoy]/[Izanagi Spear Warrior]
+Cosmos Factor				>>Lunarian Commander
+High Fantasy Tower			Lunarian/Moon Rabbit
+Peach Orchard
+(Wu Gang's Misery)
+[Small Mochi Plant]			>>Moon Rabbit/Combat Unit>>Combat Unit
+[Large Mochi Plant]			>>Moon Rabbit/Combat Unit>>Combat Unit

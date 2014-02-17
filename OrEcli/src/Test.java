@@ -2,13 +2,18 @@
 
 
 public class Test {
+	
+	O o;
 
 	public static void main(String[] args) {
-		O a;
-		O b;
-		a = new O();
-		b = new O();
-		System.out.println(a == b);
+		O o = new O();;
+		Test t1 = new Test(o);
+		Test t2 = new Test(o);
+		System.out.println(t1.o == t2.o);
+	}
+	
+	public Test(O o) {
+		this.o = o;
 	}
 	
 	static class O {

@@ -1,20 +1,18 @@
 package objects;
 
-import game.Side;
-
 public abstract class Vulnerable extends GameObject {
 	
-	protected Side side;
-	protected int HP;
-	protected int MaxHP;
-	protected boolean destroyed;
-	
-	public Vulnerable(int xPos, int yPos) {
+	private int HP;
+	private int HPMax;
+
+	public Vulnerable(int xPos, int yPos, int HPMax) {
 		super(xPos, yPos);
+		this.HPMax = HP = HPMax;
+		HP = HPMax;
 	}
-	
+
 	public boolean isDestroyed() {
-		return destroyed;
+		return HP >= 0;
 	}
 
 }

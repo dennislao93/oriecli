@@ -4,14 +4,19 @@ import java.util.ArrayList;
 
 public class Link {
 	
-	private Road from;
-	private Road to;
+	private MapElem from;
+	private MapElem to;
 	private ArrayList<LinkProperty> properties;
+	private int dir;
 	
-	public Link(Road from, Road to, ArrayList<LinkProperty> properties) {
+	public Link(MapElem from, MapElem to, ArrayList<LinkProperty> properties) {
 		this.from = from;
 		this.to = to;
 		this.properties = properties;
+	}
+	
+	public MapElem getFrom() {
+		return from;
 	}
 	
 	public void addProperty(LinkProperty p) {
@@ -20,6 +25,14 @@ public class Link {
 	
 	public ArrayList<LinkProperty> getProperties() {
 		return properties;
+	}
+	
+	public void clearProperties() {
+		properties.clear();
+	}
+	
+	public int getDir() {
+		return dir;
 	}
 
 }

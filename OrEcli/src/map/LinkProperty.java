@@ -1,16 +1,15 @@
 package map;
 
-import objects.Building;
 import objects.UnitType;
 
 public class LinkProperty {
 	
-	private Building building;
+	private Request request;
 	private UnitType unitType;
 	private boolean infinite;
 	
-	public Building getBuilding() {
-		return building;
+	public Request getRequest() {
+		return request;
 	}
 	
 	public UnitType getUnitType() {

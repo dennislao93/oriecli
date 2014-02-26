@@ -1,15 +1,15 @@
 package map;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Link {
 	
 	private MapElem from;
 	private MapElem to;
-	private ArrayList<LinkProperty> properties;
+	private HashSet<LinkProperty> properties;
 	private int dir;
 	
-	public Link(MapElem from, MapElem to, ArrayList<LinkProperty> properties) {
+	public Link(MapElem from, MapElem to, HashSet<LinkProperty> properties) {
 		this.from = from;
 		this.to = to;
 		this.properties = properties;
@@ -19,16 +19,20 @@ public class Link {
 		return from;
 	}
 	
+	public MapElem getTo() {
+		return to;
+	}
+	
 	public void addProperty(LinkProperty p) {
 		properties.add(p);
 	}
 	
-	public ArrayList<LinkProperty> getProperties() {
-		return properties;
+	public void removeProperty(LinkProperty p) {
+		properties.remove(p);
 	}
 	
-	public void clearProperties() {
-		properties.clear();
+	public HashSet<LinkProperty> getProperties() {
+		return properties;
 	}
 	
 	public int getDir() {

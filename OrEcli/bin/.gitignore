@@ -1,4 +1,6 @@
-/Images
+/actions
+/ai
+/display
 /Constants.class
 /Test$O.class
 /Test.class
@@ -11,11 +13,7 @@
 /TestUDP$ClientThread.class
 /TestUDP$ServerThread.class
 /TestUDP.class
-/actions
-/ai
-/display
 /game
 /main
 /map
 /objects
-/images

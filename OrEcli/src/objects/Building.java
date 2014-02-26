@@ -1,9 +1,11 @@
 package objects;
 
+import display.ImageHandler;
+
 public abstract class Building extends Vulnerable {
 
-	public Building(int xPos, int yPos, int HPMax) {
-		super(xPos, yPos, HPMax);
+	public Building(ImageHandler imageHandler, int HPMax) {
+		super(imageHandler, HPMax);
 	}
 
 }

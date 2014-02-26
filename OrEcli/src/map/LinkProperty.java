@@ -1,15 +1,20 @@
 package map;
 
+import objects.Unit;
 import objects.UnitType;
 
 public class LinkProperty {
 	
-	private Request request;
+	private Unit requestedUnit;
 	private UnitType unitType;
 	private boolean infinite;
 	
-	public Request getRequest() {
-		return request;
+	public void setRequestedUnit(Unit unit) {
+		this.requestedUnit = unit;
+	}
+	
+	public Unit getRequestedUnit() {
+		return requestedUnit;
 	}
 	
 	public UnitType getUnitType() {

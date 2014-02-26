@@ -2,12 +2,12 @@ package display;
 
 public abstract class Displayable {
 	
+	private ImageHandler imageHandler;
 	private int xPos;
 	private int yPos;
 	
-	public Displayable(int xPos, int yPos) {
-		this.xPos = xPos;
-		this.yPos = yPos;
+	public Displayable(ImageHandler imageHandler) {
+		this.imageHandler = imageHandler;
 	}
 	
 	public int getXPos() {

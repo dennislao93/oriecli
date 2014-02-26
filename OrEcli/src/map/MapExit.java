@@ -1,12 +1,18 @@
 package map;
 
-import java.util.ArrayList;
+import game.Side;
+
+import java.util.HashSet;
 
 public class MapExit extends MapElem {
 	
-	private ArrayList<LinkProperty> properties;
+	private HashSet<LinkProperty> properties;
 	
-	public ArrayList<LinkProperty> getProperties() {
+	public MapExit(Side side) {
+		super(side);
+	}
+	
+	public HashSet<LinkProperty> getProperties() {
 		return properties;
 	}
 

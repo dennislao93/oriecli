@@ -1,10 +1,16 @@
 package map;
 
-import java.util.ArrayList;
+import game.Side;
+
+import java.util.HashSet;
 
 public class MapBuilding extends MapElem {
 
-	public ArrayList<LinkProperty> getProperties() {
+	public MapBuilding(Side side) {
+		super(side);
+	}
+
+	public HashSet<LinkProperty> getProperties() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,11 +1,12 @@
 package objects;
 
 import display.Displayable;
+import display.ImageHandler;
 
 public abstract class GameObject extends Displayable {
 
-	public GameObject(int xPos, int yPos) {
-		super(xPos, yPos);
+	public GameObject(ImageHandler imageHandler) {
+		super(imageHandler);
 	}
 	
 	public abstract void step();

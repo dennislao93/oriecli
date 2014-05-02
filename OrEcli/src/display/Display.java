@@ -14,14 +14,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import objects.Roads;
+import actions.BuildRoad;
 import actions.Forfeit;
 import actions.Pause;
+import actions.RemoveRoad;
 import actions.Resume;
 import main.Constants;
 import main.Library;
@@ -33,7 +37,7 @@ public class Display extends JPanel {
 	private JLayeredPane layeredPane;
 
 	private MainFrame mainFrame;
-	private Mouse mouse;
+	public Dashboard dashboard;
 	private UserListener userListener;
 	private int xOffset;
 	private int yOffset;
@@ -54,13 +58,16 @@ public class Display extends JPanel {
 	private boolean[] scrollSwitches = new boolean[]{false, false, false, false}; // up down left right
 	private boolean[] scrollSpeeds = new boolean[] {false, false, false, false};
 	private boolean[] keyScrollSwitches = new boolean[]{false, false, false, false};
+	private int[] buildRoadTile;
+	private int[] removeRoadTile;
 
 	private GroundPnl groundPnl = new GroundPnl();
 	private BuildingBasesPnl buildingBasesPnl = new BuildingBasesPnl();
 	private UnitsShotsPnl unitsShotsPnl = new UnitsShotsPnl();
 	private HitsPnl hitsPnl = new HitsPnl();
 	private BuildingTopsPnl buildingTopsPnl = new BuildingTopsPnl();
-	private Integer noticeLayer = new Integer(5);
+	private GridPnl gridPnl = new GridPnl();
+	private Integer noticeLayer = new Integer(6);
 	private boolean paused = false;
 	private boolean isPromptingResume = false;
 	private boolean isWaitingResume = false;
@@ -77,7 +84,9 @@ public class Display extends JPanel {
 					userListener.setAction(new Resume(new String[]{userListener.getGameTypeStr(), "init"}));
 				} break;
 			case 'f': //forfeit
-				userListener.setAction(new Forfeit(new String[]{userListener.getGameTypeStr()}));
+				if (!paused) {
+					userListener.setAction(new Forfeit(new String[]{userListener.getGameTypeStr()}));
+				}
 			}
 		}
 		@Override
@@ -101,6 +110,50 @@ public class Display extends JPanel {
 			case 83: keyScrollSwitches[DOWN] = false; break;
 			}
 		}
+	};
+	
+	private MouseMotionListener mouseMotionListener = new MouseMotionListener() {
+		@Override
+		public void mouseDragged(MouseEvent arg0) {}
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			if (Dashboard.mode == Dashboard.Mode.BUILD_ROAD) {
+				int x = (e.getX() - xOffset) / tw;
+				int y = (e.getY() - yOffset) / tw;
+				buildRoadTile = Dashboard.checkBuildRoad(x, y);
+			} else {
+				buildRoadTile = null;
+			}
+			if (Dashboard.mode == Dashboard.Mode.REMOVE_ROAD) {
+				int x = (e.getX() - xOffset) / tw;
+				int y = (e.getY() - yOffset) / tw;
+				removeRoadTile = Dashboard.checkRemoveRoad(x, y);
+			} else {
+				removeRoadTile = null;
+			}
+		}
+	};
+	
+	private MouseListener mouseListener = new MouseListener() {
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			if (paused) return;
+			if (buildRoadTile != null) {
+				userListener.setAction(new BuildRoad(new String[]{"" + buildRoadTile[0], "" + buildRoadTile[1]}));
+				buildRoadTile = null;
+			} else if (removeRoadTile != null) {
+				userListener.setAction(new RemoveRoad(new String[]{"" + removeRoadTile[0], "" + removeRoadTile[1]}));
+				removeRoadTile = null;
+			}
+		}
+		@Override
+		public void mouseEntered(MouseEvent arg0) {}
+		@Override
+		public void mouseExited(MouseEvent arg0) {}
+		@Override
+		public void mousePressed(MouseEvent arg0) {}
+		@Override
+		public void mouseReleased(MouseEvent arg0) {}
 	};
 
 	private JPanel pauseNotice = new JPanel() {
@@ -139,9 +192,9 @@ public class Display extends JPanel {
 	};
 	private JPanel gameOverNotice = new JPanel();
 
-	public Display(final UserListener userListener, Mouse mouse, MainFrame mainFrame, final int xTiles, final int yTiles) {
+	public Display(final UserListener userListener, MainFrame mainFrame, final Dashboard dashboard, final int xTiles, final int yTiles) {
 		this.userListener = userListener;
-		this.mouse = mouse;
+		this.dashboard = dashboard;
 		this.mainFrame = mainFrame;
 		this.xTiles = xTiles;
 		this.yTiles = yTiles;
@@ -154,6 +207,7 @@ public class Display extends JPanel {
 		layeredPane.add(unitsShotsPnl, new Integer(2));
 		layeredPane.add(hitsPnl, new Integer(3));
 		layeredPane.add(buildingTopsPnl, new Integer(4));
+		layeredPane.add(gridPnl, new Integer(5));
 		paused = false;
 		addComponentListener(new ComponentListener(){
 			@Override
@@ -192,21 +246,9 @@ public class Display extends JPanel {
 			@Override
 			public void componentHidden(ComponentEvent e) {}
 		});
-		addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {}
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-			@Override
-			public void mouseEntered(MouseEvent e) {}
-			@Override
-			public void mouseExited(MouseEvent e) {}
-		});
 		mainFrame.addKeyListener(keyListener);
+		groundPnl.addMouseMotionListener(mouseMotionListener);
+		groundPnl.addMouseListener(mouseListener);
 		new Thread() {
 			@Override
 			public void run() {
@@ -342,18 +384,41 @@ public class Display extends JPanel {
 
 	}
 
+	private int fromX;
+	private int fromY;
+	private int toX;
+	private int toY;
 	private class GroundPnl extends DisplayPanel {
 		@Override
 		public void paintComponent(Graphics g) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, getWidth(), getHeight());
 			g.drawImage(Library.moonsurface, xOffset, yOffset, tw * xTiles, tw * yTiles, null);
-			for (int i = 0; i < xTiles; i++) {
-				for (int j = 0; j < yTiles; j++) {
-					g.drawRect(i * tw + xOffset, j * tw + yOffset, tw, tw);
+			for (Integer[] roadLocs: Roads.locs) {
+				g.drawImage(Library.road, roadLocs[0] * tw + xOffset, roadLocs[1] * tw + yOffset, null);
+			}
+			for (int i = 0; i < Roads.linkFrom.size(); i++) {
+				fromX = Roads.linkFrom.get(i)[0];
+				fromY = Roads.linkFrom.get(i)[1];
+				toX = Roads.linkTo.get(i)[0];
+				toY = Roads.linkTo.get(i)[1];
+				if (fromX < toX) {
+					g.drawImage(Library.linkImgE, fromX * tw + xOffset + 48, fromY * tw + yOffset + 12, null);
+				} else if (fromX > toX) {
+					g.drawImage(Library.linkImgW, fromX * tw + xOffset - 16, fromY * tw + yOffset + 12, null);
+				} else if (fromY < toY) {
+					g.drawImage(Library.linkImgS, fromX * tw + xOffset + 12, fromY * tw + yOffset + 48, null);
+				} else if (fromY > toY) {
+					g.drawImage(Library.linkImgN, fromX * tw + xOffset + 12, fromY * tw + yOffset - 16, null);
 				}
 			}
-			//TODO
+			if (buildRoadTile != null) {
+				g.setColor(Color.GREEN);
+				g.fillRect(buildRoadTile[0] * tw + xOffset, buildRoadTile[1] * tw + yOffset, tw, tw);
+			} else if (removeRoadTile != null) {
+				g.setColor(Color.RED);
+				g.fillRect(removeRoadTile[0] * tw + xOffset, removeRoadTile[1] * tw + yOffset, tw, tw);
+			}
 		}
 	}
 
@@ -378,6 +443,19 @@ public class Display extends JPanel {
 	private class BuildingTopsPnl extends DisplayPanel {
 		public void paintComponent(Graphics g) {
 			//TODO
+		}
+	}
+
+	private class GridPnl extends DisplayPanel {
+		public void paintComponent(Graphics g) {
+			if (Dashboard.showGrid) {
+				g.setColor(Color.BLACK);
+				for (int i = 0; i < xTiles; i++) {
+					for (int j = 0; j < yTiles; j++) {
+						g.drawRect(i * tw + xOffset, j * tw + yOffset, tw, tw);
+					}
+				}
+			}
 		}
 	}
 

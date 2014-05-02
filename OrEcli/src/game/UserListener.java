@@ -1,19 +1,25 @@
 package game;
 
+import main.Constants;
 import actions.Action;
 
 public class UserListener {
 
 	private Action action;
 	private GameType gameType;
+	private long actionTimer;
 
 	public UserListener(GameType gameType) {
 		this.gameType = gameType;
 		action = null;
+		actionTimer = System.currentTimeMillis();
 	}
 
 	public synchronized void setAction(Action action) {
-		this.action = action;
+		if (System.currentTimeMillis() - actionTimer > Constants.ACTION_COOLDOWN) {
+			this.action = action;
+			actionTimer = System.currentTimeMillis();
+		}
 	}
 
 	public synchronized Action getAction() {

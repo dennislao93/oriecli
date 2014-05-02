@@ -4,12 +4,9 @@ import game.Side;
 
 public class MapRoad extends MapElem {
 
-	private int dir;
-	private boolean isBig;
+	boolean isBig;
 	
-	public MapRoad(Side side, int dir, boolean isBig) {
-		super(side);
-		this.dir = dir;
+	public MapRoad(boolean isBig) {
 		this.isBig = isBig;
 	}
 

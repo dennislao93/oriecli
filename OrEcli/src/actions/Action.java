@@ -37,6 +37,10 @@ public abstract class Action {
 			return new Forfeit(args);
 		} else if (header.equals("fftC")) {
 			return new ForfeitClient(args);
+		} else if (header.equals("bdr")) {
+			return new BuildRoad(args);
+		} else if (header.equals("rmr")) {
+			return new RemoveRoad(args);
 		}
 		return null;
 	}

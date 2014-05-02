@@ -105,7 +105,9 @@ public class GameEngine {
 				}
 				// SERVER / SINGLE_PLAYER / CLIENT
 				if (game.gameOver()) {
-					netLayer.cancelTimer();
+					if (gameType != GameType.SINGLE_PLAYER) {
+						netLayer.cancelTimer();
+					}
 					break;
 				}
 				Debug.println('n', "Cycle time: " + (cycleTime = System.currentTimeMillis() - cycleTimeKeeper));

@@ -2,10 +2,7 @@ package main;
 
 import java.awt.Container;
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.locks.Lock;
-
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
@@ -15,15 +12,23 @@ public class Library {
 	public static boolean doneLoading;
 	
 	public static Image moonsurface;
-	public static MainFrame mainFrame;
+	public static Image road;
+	public static Image linkImgN;
+	public static Image linkImgS;
+	public static Image linkImgE;
+	public static Image linkImgW;
 
 	public static void loadResources(final Container content) throws IOException {
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
 				try {
-					//moonsurface = ImageIO.read(new File("Images/moonsurface.png"));
-					moonsurface = ImageIO.read(ClassLoader.getSystemResourceAsStream("Images/moonsurface.png"));
+					moonsurface = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/moonsurface.png"));
+					road = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/road.png"));
+					linkImgN = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/roadLinkNorth.png"));
+					linkImgS = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/roadLinkSouth.png"));
+					linkImgE = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/roadLinkEast.png"));
+					linkImgW = ImageIO.read(ClassLoader.getSystemResourceAsStream("images/roadLinkWest.png"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

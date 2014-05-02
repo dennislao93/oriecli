@@ -1,11 +1,8 @@
 package game;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import map.Map;
-import objects.GameObject;
-import objects.Vulnerable;
 import display.Display;
 import display.Displayable;
 import actions.Action;
@@ -15,11 +12,10 @@ public class Game {
 	private Display display;
 	
 	private boolean gameOver;
-	private ArrayList<GameObject> objects = new ArrayList<GameObject>();
-	public static ArrayList<GameObject> newObjects = new ArrayList<GameObject>();
-	private Map map;
 	private boolean paused = false;
 	private Action[] updates = new Action[2];
+	
+	private Map map;
 	
 	private boolean isVictor;
 	private boolean isForfeit;
@@ -37,6 +33,7 @@ public class Game {
 	
 	public void setDisplay(Display display) {
 		this.display = display;
+		map.display = display;
 	}
 
 	public boolean gameOver() {
@@ -116,16 +113,7 @@ public class Game {
 	}
 
 	public void step() {
-		for (GameObject o: objects) {
-			o.step();
-			if (o instanceof Vulnerable && ((Vulnerable)o).isDestroyed()) {
-				objects.remove(o);
-			}
-		}
-		for (GameObject o: newObjects) {
-			objects.add(o);
-		}
-		newObjects.clear();
+		
 	}
 
 }

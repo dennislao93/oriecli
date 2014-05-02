@@ -3,169 +3,157 @@ package map;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+
+import objects.Roads;
 
 public class RoadManager {
+	Map map;
 
-	private HashMap<MapElem, HashSet<Link>> inlets;
-	private HashMap<MapElem, HashSet<Link>> outlets;
-	private HashSet<LinkProperty> helperProperties;
-	private HashSet<LinkProperty> validProperties;
-	private Iterator<LinkProperty> badPropertiesIterator;
-
-	public RoadManager(MapRoad startingRoad1, MapRoad startingRoad2) {
-		inlets = new HashMap<MapElem, HashSet<Link>>();
-		outlets = new HashMap<MapElem, HashSet<Link>>();
-		helperProperties = new HashSet<LinkProperty>();
-		validProperties = new HashSet<LinkProperty>();
-		outlets.put(startingRoad1, new HashSet<Link>());
-		outlets.put(startingRoad2, new HashSet<Link>());
+	public RoadManager(Map map) {
+		this.map = map;
 	}
 
-	public void addRoadOutlet(MapElem prev, MapRoad next) {
-		handleNewOutlet(prev, next);
+	public void addRoadOutlet(MapElem[] prev, MapRoad next, byte[] dirs) {
+		handleNewOutlet(prev, next, dirs);
 	}
 
-	public void addBuildingOutlet(MapElem prev, MapBuilding next) {
-		handleNewOutlet(prev, next);
+	public void addBuildingOutlet(MapElem[] prev, MapBuilding next, byte[] dir) {
+		handleNewOutlet(prev, next, dir);
 		addProperties(next, next.getProperties());
 	}
 
-	public void addExit(MapElem prev, MapExit exit) {
-		Link link = new Link(prev, exit, new HashSet<LinkProperty>());
-		outlets.get(prev).add(link);
-		inlets.put(exit, new HashSet<Link>());
-		inlets.get(exit).add(link);
-		addProperties(exit, exit.getProperties());
+	public void addExit(MapElem prev, MapExit exit, byte dir) {
+		Link link = new Link(prev, exit, dir);
+		map.outlets.get(prev).add(link);
+		map.inlets.put(exit, new HashSet<Link>());
+		map.inlets.get(exit).add(link);
+		Roads.linkFrom.add(new Integer[]{prev.tileX, prev.tileY});
+		Roads.linkTo.add(new Integer[]{exit.tileX, exit.tileY});
+		addProperties(exit, exit.properties);
 	}
 
-	private void handleNewOutlet(MapElem prev, MapElem next) {
-		Link link = new Link(prev, next, new HashSet<LinkProperty>());
-		outlets.get(prev).add(link);
-		inlets.put(next, new HashSet<Link>());
-		inlets.get(next).add(link);
-		outlets.put(next, new HashSet<Link>());
-	}
-
-	public void addThruRoad(MapElem from[], MapElem to[], MapRoad thru) {
-		constructLinksAndGatherOutletProps(from, to, thru);
-		addProperties(thru, helperProperties);
-	}
-
-	public void addThruBuilding(MapElem from[], MapElem to[], MapBuilding thru) {
-		constructLinksAndGatherOutletProps(from, to, thru);
-		helperProperties.addAll(thru.getProperties());
-		addProperties(thru, helperProperties);
-	}
-
-	private void constructLinksAndGatherOutletProps(MapElem from[], MapElem to[], MapElem thru) {
-		inlets.put(thru, new HashSet<Link>());
-		outlets.put(thru, new HashSet<Link>());
-		for (MapElem fromElem: from) {
-			Link fromLink = new Link(fromElem, thru, new HashSet<LinkProperty>());
-			outlets.get(fromElem).add(fromLink);
-			inlets.get(thru).add(fromLink);
+	private void handleNewOutlet(MapElem[] prev, MapElem next, byte[] dirs) {
+		map.inlets.put(next, new HashSet<Link>());
+		for (int i = 0; i < prev.length; i++) {
+			Link link = new Link(prev[i], next, dirs[i]);
+			map.outlets.get(prev[i]).add(link);
+			map.inlets.get(next).add(link);
+			Roads.linkFrom.add(new Integer[]{prev[i].tileX, prev[i].tileY});
+			Roads.linkTo.add(new Integer[]{next.tileX, next.tileY});
 		}
-		helperProperties.clear();
-		for (MapElem toElem: to) {
-			Link toLink = new Link(thru, toElem, new HashSet<LinkProperty>());
-			outlets.get(thru).add(toLink);
-			inlets.get(toElem).add(toLink);
-			gatherOutletProperties(toElem);
-			if (toElem instanceof MapBuilding) {
-				helperProperties.addAll(((MapBuilding)toElem).getProperties());
+		map.outlets.put(next, new HashSet<Link>());
+	}
+
+	public void addThruElem(MapElem[] from, MapElem[] to, MapElem thru, byte[] fromDirs, byte[] toDirs) {
+		HashSet<LinkProperty> helperProperties = new HashSet<LinkProperty>();
+		constructLinksAndGatherOutletProps(from, to, thru, fromDirs, toDirs, helperProperties);
+		if (thru instanceof MapBuilding) {
+			helperProperties.addAll(((MapBuilding)thru).getProperties());
+		}
+		addProperties(thru, helperProperties);
+	}
+
+	private void constructLinksAndGatherOutletProps(MapElem from[], MapElem to[], MapElem thru, byte[] fromDirs, byte[] toDirs, HashSet<LinkProperty> helperProperties) {
+		map.inlets.put(thru, new HashSet<Link>());
+		map.outlets.put(thru, new HashSet<Link>());
+		int i;
+		for (i = 0; i < from.length; i++) {
+			Link fromLink = new Link(from[i], thru, fromDirs[i]);
+			map.outlets.get(from[i]).add(fromLink);
+			map.inlets.get(thru).add(fromLink);
+			Roads.linkFrom.add(new Integer[]{from[i].tileX, from[i].tileY});
+			Roads.linkTo.add(new Integer[]{thru.tileX, thru.tileY});
+		}
+		for (i = 0; i < to.length; i++) {
+			Link toLink = new Link(thru, to[i], toDirs[i]);
+			map.outlets.get(thru).add(toLink);
+			map.inlets.get(to[i]).add(toLink);
+			Roads.linkFrom.add(new Integer[]{thru.tileX, thru.tileY});
+			Roads.linkTo.add(new Integer[]{to[i].tileX, to[i].tileY});
+			gatherOutletProperties(to[i], helperProperties);
+			if (to[i] instanceof MapBuilding) {
+				helperProperties.addAll(((MapBuilding)to[i]).getProperties());
 			}
 		}
 	}
 
-	private void gatherOutletProperties(MapElem elem) {
-		for (Link outletLink: outlets.get(elem)) {
-			for (LinkProperty outletLinkProperty: outletLink.getProperties()) {
+	private void gatherOutletProperties(MapElem elem, HashSet<LinkProperty> helperProperties) {
+		for (Link outletLink: map.outlets.get(elem)) {
+			for (LinkProperty outletLinkProperty: outletLink.properties) {
 				helperProperties.add(outletLinkProperty);
 			}
 		}
 	}
 
-	private boolean visited;
 	private void addProperties(MapElem elem, Collection<LinkProperty> newProperties) {
-		visited = true;
-		addPropertiesSingleElem(elem, newProperties);
-		if (!visited) {
-			for (Link elemInletLink: inlets.get(elem)) {
-				addProperties(elemInletLink.getFrom(), newProperties);
+		if (!addPropertiesSingleElem(elem, newProperties)) {
+			for (Link elemInletLink: map.inlets.get(elem)) {
+				addProperties(elemInletLink.from, newProperties);
 			}
 		}
 	}
 
-	private void addPropertiesSingleElem(MapElem elem, Collection<LinkProperty> newProperties) {
-		for (Link elemInletLink: inlets.get(elem)) {
+	private boolean addPropertiesSingleElem(MapElem elem, Collection<LinkProperty> newProperties) {
+		boolean visited = true;
+		for (Link elemInletLink: map.inlets.get(elem)) {
 			for (LinkProperty newProp: newProperties) {
-				if (!elemInletLink.getProperties().contains(newProp)) {
+				if (!elemInletLink.properties.contains(newProp)) {
 					visited = false;
-					elemInletLink.addProperty(newProp);
+					elemInletLink.properties.add(newProp);
 				}
 			}
 		}
+		return visited;
 	}
 
-	public void removeRoad(MapRoad road) {
-		helperProperties.clear();
-		gatherOutletProperties(road);
-		for (Link inletLink: inlets.get(road)) {
-			removeProperties(inletLink.getFrom(), helperProperties, inletLink);
+	public void removeElem(MapElem elem) {
+		HashSet<LinkProperty> helperProperties = new HashSet<LinkProperty>();
+		gatherOutletProperties(elem, helperProperties);
+		if (elem instanceof MapBuilding) {
+			helperProperties.addAll(((MapBuilding)elem).getProperties());
 		}
-		removeLinks(road);
-	}
-
-	public void removeBuilding(MapBuilding building) {
-		helperProperties.clear();
-		gatherOutletProperties(building);
-		helperProperties.addAll(building.getProperties());
-		for (Link inletLink: inlets.get(building)) {
-			removeProperties(inletLink.getFrom(), helperProperties, inletLink);
+		for (Link inletLink: map.inlets.get(elem)) {
+			removeProperties(inletLink.from, helperProperties, inletLink);
 		}
-		removeLinks(building);
+		map.validProperties.clear();
+		removeLinks(elem);
 	}
 
 	public void removeExit(MapExit exit) {
-		removeProperties(inlets.get(exit).iterator().next().getFrom(), exit.getProperties(), inlets.get(exit).iterator().next());
-		outlets.get(inlets.get(exit).iterator().next().getFrom()).remove(inlets.get(exit).iterator().next());
-		inlets.remove(exit);
+		Link exitInlet = map.inlets.get(exit).iterator().next();
+		removeProperties(exitInlet.from, exit.properties, exitInlet);
+		Roads.removeLink(exitInlet.from.tileX, exitInlet.from.tileY, exit.tileX, exit.tileY);
+		map.outlets.get(exitInlet.from).remove(exitInlet);
+		map.inlets.remove(exit);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void removeProperties(MapElem elem, HashSet<LinkProperty> badProperties, Link fromOutlet) {
-		validProperties.clear();
-		for (Link outletLink: outlets.get(elem)) {
+		for (Link outletLink: map.outlets.get(elem)) {
 			if (outletLink == fromOutlet) continue;
-			for (LinkProperty outletLinkProperty: outletLink.getProperties()) {
-				validProperties.add(outletLinkProperty);
+			for (LinkProperty outletLinkProperty: outletLink.properties) {
+				map.validProperties.add(outletLinkProperty);
 			}
 		}
-		for (badPropertiesIterator = badProperties.iterator(); badPropertiesIterator.hasNext(); ) {
-			for (LinkProperty validProperty: validProperties) {
-				if (badPropertiesIterator.next() == validProperty) {
-					badPropertiesIterator.remove();
-				}
-			}
-		}
-		for (Link inletLink: inlets.get(elem)) {
-			for (LinkProperty badProperty: badProperties) {
-				inletLink.removeProperty(badProperty);
-			}
-			removeProperties(inletLink.getFrom(), (HashSet<LinkProperty>) badProperties.clone(), inletLink);
+		badProperties.removeAll(map.validProperties);
+		if (badProperties.size() == 0) return;
+		for (Link inletLink: map.inlets.get(elem)) {
+			inletLink.properties.removeAll(badProperties);
+			removeProperties(inletLink.from, (HashSet<LinkProperty>) badProperties.clone(), inletLink);
 		}
 	}
 
 	private void removeLinks(MapElem elem) {
-		for (Link inletLink: inlets.get(elem)) {
-			outlets.get(inletLink.getFrom()).remove(inletLink);
+		for (Link inletLink: map.inlets.get(elem)) {
+			Roads.removeLink(inletLink.from.tileX, inletLink.from.tileY, elem.tileX, elem.tileY);
+			map.outlets.get(inletLink.from).remove(inletLink);
 		}
-		for (Link outletLink: outlets.get(elem)) {
-			inlets.get(outletLink.getTo()).remove(outletLink);
+		for (Link outletLink: map.outlets.get(elem)) {
+			Roads.removeLink(elem.tileX, elem.tileY, outletLink.to.tileX, outletLink.to.tileY);
+			map.inlets.get(outletLink.to).remove(outletLink);
 		}
-		inlets.remove(elem);
-		outlets.remove(elem);
+		map.inlets.remove(elem);
+		map.outlets.remove(elem);
 	}
 
 }

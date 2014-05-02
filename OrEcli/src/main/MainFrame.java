@@ -27,13 +27,13 @@ import javax.swing.JTextField;
 
 import display.Dashboard;
 import display.Display;
-import display.Mouse;
 
 /**
  * @author Dennis
  * the main gui interface
  */
 public class MainFrame extends JFrame {
+	
 	private Container content;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -45,13 +45,13 @@ public class MainFrame extends JFrame {
 	}
 
 	private MainFrame() throws IOException, InterruptedException {
+		Constants.mainFrame = this;
 		content = getContentPane();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setPreferredSize(new Dimension(Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT));
 		content.setLayout(new BorderLayout());
 		pack();
 		setVisible(true);
-		Library.mainFrame = this;
 		Library.loadResources(content);
 		play(GameType.SINGLE_PLAYER, SettlementType.YUEH_KUNG, SettlementType.TSUKI_NO_MIYAKO, null, MapSize.MIDSIZED);
 		//makeNetworkChoice();
@@ -223,7 +223,6 @@ public class MainFrame extends JFrame {
 		final GameEngine engine = new GameEngine();
 		if (gameType != GameType.SINGLE_PLAYER) {
 			playHelper(engine, gameType, settlement, mapSize, net);
-			engine.setNetLayer(net);
 			if (gameType == GameType.CLIENT) Constants.side = Side.PLAYER2;
 		} else {
 			playHelper(engine, GameType.SINGLE_PLAYER, settlement, mapSize, null);
@@ -261,13 +260,11 @@ public class MainFrame extends JFrame {
 		if (gameType != GameType.SINGLE_PLAYER) {
 			engine.setNetLayer(net);
 		}
-		Dashboard dashboard = new Dashboard(settlement);
+		Dashboard dashboard = new Dashboard(settlement, game);
 		dashboard.setPreferredSize(new Dimension(Constants.DISPLAY_WIDTH - 20, Constants.DASHBOARD_HEIGHT));
-		Mouse mouse = new Mouse();
-		dashboard.setMouse(mouse);
 		UserListener userListener = new UserListener(gameType);
 		dashboard.setUserListener(userListener);
-		Display display = new Display(userListener, mouse, this, mapWidth, mapHeight);
+		Display display = new Display(userListener, this, dashboard, mapWidth, mapHeight);
 		game.setDisplay(display);
 		makePlayScreen(dashboard, display);
 		engine.setup(game, gameType, userListener, display);

@@ -1,8 +1,9 @@
 package main;
-
 import game.Side;
 
 public class Constants {
+	
+	public static MainFrame mainFrame;
 	
 	public static Side side = Side.PLAYER1;
 	
@@ -24,8 +25,22 @@ public class Constants {
 	public static final int SLOW_SCROLL_SPEED = 8;
 	public static final int FAST_SCROLL_SPEED = 24;
 	
-	public static final int NORTH = 0;
-	public static final int SOUTH = 1;
-	public static final int EAST = 2;
-	public static final int WEST = 3;
+	public static final long ACTION_COOLDOWN = 200;
+	
+	public static final byte N = 0;
+	public static final byte S = 1;
+	public static final byte E = 2;
+	public static final byte W = 3;
+	public static final byte NS = 4;
+	public static final byte NE = 5;
+	public static final byte NW = 6;
+	public static final byte SE = 7;
+	public static final byte SW = 8;
+	public static final byte EW = 9;
+	public static final byte NSE = 10;
+	public static final byte NSW = 11;
+	public static final byte NEW = 12;
+	public static final byte SEW = 13;
+	public static final byte NSEW = 14;
+	
 }
